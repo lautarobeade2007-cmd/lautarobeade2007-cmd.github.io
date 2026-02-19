@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recetario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6ec;
+      --brown: #3e1f00;
+      --orange: #d4622a;
+      --gold: #c9963a;
+      --light: #fef9f4;
+      --shadow: rgba(62,31,0,0.12);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: var(--cream);
+      color: var(--brown);
+      min-height: 100vh;
+      background-image: radial-gradient(ellipse at top left, #fde8cc 0%, var(--cream) 60%);
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 30px;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      color: var(--brown);
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    header h1 span {
+      color: var(--orange);
+    }
+
+    header p {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #8a6040;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: var(--gold);
+      margin: 20px auto;
+      border-radius: 2px;
+    }
+
+    /* BOTONES */
+    .botones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      padding: 10px 20px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .btn-receta {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 14px 26px;
+      border: 2px solid var(--brown);
+      background: transparent;
+      color: var(--brown);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-receta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--orange);
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      z-index: 0;
+    }
+
+    .btn-receta span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-receta:hover::before,
+    .btn-receta.activo::before {
+      transform: translateY(0);
+    }
+
+    .btn-receta:hover,
+    .btn-receta.activo {
+      color: white;
+      border-color: var(--orange);
+    }
+
+    /* TARJETA DE RECETA */
+    .receta-card {
+      max-width: 760px;
+      margin: 0 auto 80px;
+      padding: 0 20px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-inner {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: var(--brown);
+      color: white;
+      padding: 36px 40px 28px;
+    }
+
+    .card-header .emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .card-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .card-header .subtitulo {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #c4a882;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      padding: 36px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+
+    @media (max-width: 600px) {
+      .card-body { grid-template-columns: 1fr; }
+      .card-header, .card-body { padding: 24px; }
+    }
+
+    .seccion h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--orange);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0e0cc;
+    }
+
+    .seccion ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .seccion ul li {
+      padding: 6px 0;
+      font-size: 0.95rem;
+      color: #5a3a1a;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px dashed #f5ece0;
+    }
+
+    .seccion ul li::before {
+      content: '•';
+      color: var(--gold);
+      font-size: 1.2rem;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .seccion ol {
+      padding-left: 20px;
+    }
+
+    .seccion ol li {
+      padding: 7px 0;
+      font-size: 0.95rem;
+      color: #5a3a1a;
+      line-height: 1.5;
+      border-bottom: 1px dashed #f5ece0;
+    }
+
+    .seccion ol li::marker {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .info-chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .chip {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      color: #f0d9bb;
+    }
+
+    .placeholder {
+      text-align: center;
+      padding: 60px 20px;
+      color: #b08060;
+    }
+
+    .placeholder .icono {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .placeholder p {
+      font-size: 1.1rem;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>El <span>Recetario</span></h1>
+  <div class="divider"></div>
+  <p>Elegí una receta para empezar</p>
+</header>
+
+<div class="botones">
+  <button class="btn-receta" onclick="mostrarReceta('muffin')"><span>🧁 Muffin</span></button>
+  <button class="btn-receta" onclick="mostrarReceta('pastel_papa')"><span>🥔 Pastel de Papa</span></button>
+  <button class="btn-receta" onclick="mostrarReceta('brownie')"><span>🍫 Brownie</span></button>
+  <button class="btn-receta" onclick="mostrarReceta('milanesa')"><span>🍖 Milanesa</span></button>
+  <button class="btn-receta" onclick="mostrarReceta('panqueques')"><span>🥞 Panqueques</span></button>
+  <button class="btn-receta" onclick="mostrarReceta('carne_papas')"><span>🥩 Carne con Papas</span></button>
+</div>
+
+<div class="receta-card" id="receta-container">
+  <div class="card-inner">
+    <div class="placeholder">
+      <span class="icono">🍽️</span>
+      <p>Seleccioná una receta arriba para verla acá</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const recetas = {
+    muffin: {
+      emoji: "🧁",
+      nombre: "Muffin de Chocolate",
+      subtitulo: "Postre · 12 porciones · 35 min",
+      chips: ["Fácil", "35 min", "12 unidades"],
+      ingredientes: [
+        "2 tazas de harina",
+        "1 taza de azúcar",
+        "½ taza de cacao en polvo",
+        "2 huevos",
+        "1 taza de leche",
+        "½ taza de aceite",
+        "1 cdita de esencia de vainilla",
+        "2 cditas de polvo de hornear",
+        "1 pizca de sal",
+        "½ taza de chips de chocolate"
+      ],
+      pasos: [
+        "Precalentá el horno a 180°C y enmantecá los moldes para muffin.",
+        "En un bowl grande mezclá la harina, azúcar, cacao, polvo de hornear y sal.",
+        "En otro bowl batí los huevos con la leche, el aceite y la vainilla.",
+        "Uní los ingredientes secos con los líquidos mezclando suavemente, sin batir de más.",
+        "Agregá los chips de chocolate y revolvé.",
+        "Llenálos moldes hasta ¾ de su capacidad.",
+        "Hornear 20-25 minutos. Pinchá con un palillo, si sale limpio están listos."
+      ]
+    },
+    pastel_papa: {
+      emoji: "🥔",
+      nombre: "Pastel de Papa",
+      subtitulo: "Plato principal · 6 porciones · 1 hora",
+      chips: ["Medio", "1 hora", "6 porciones"],
+      ingredientes: [
+        "1 kg de papas",
+        "500g de carne picada",
+        "1 cebolla grande",
+        "2 dientes de ajo",
+        "2 huevos duros",
+        "½ taza de leche",
+        "50g de manteca",
+        "Sal, pimienta y pimentón",
+        "Aceitunas verdes",
+        "Queso rallado"
+      ],
+      pasos: [
+        "Hervir las papas peladas hasta que estén tiernas. Hacé un puré con manteca, leche, sal y pimienta.",
+        "Rehogar la cebolla y el ajo picados en aceite hasta que estén transparentes.",
+        "Agregar la carne picada y cocinar hasta que cambie de color. Condimentar con sal, pimienta y pimentón.",
+        "Añadir las aceitunas y los huevos duros picados. Mezclar bien.",
+        "En una fuente para horno, poner una capa de puré, luego el relleno de carne, y cubrir con más puré.",
+        "Espolvorear con queso rallado y llevar al horno a 200°C hasta que gratine (15-20 min)."
+      ]
+    },
+    brownie: {
+      emoji: "🍫",
+      nombre: "Brownie Clásico",
+      subtitulo: "Postre · 16 porciones · 40 min",
+      chips: ["Fácil", "40 min", "16 cuadraditos"],
+      ingredientes: [
+        "200g de chocolate negro",
+        "150g de manteca",
+        "200g de azúcar",
+        "3 huevos",
+        "100g de harina",
+        "1 cdita de vainilla",
+        "1 pizca de sal",
+        "100g de nueces (opcional)"
+      ],
+      pasos: [
+        "Precalentá el horno a 170°C. Enmantecá y enharinás un molde cuadrado.",
+        "Derretí el chocolate con la manteca a baño maría o en microondas. Dejálo enfriar un poco.",
+        "Agregá el azúcar al chocolate y mezclá bien.",
+        "Incorporá los huevos de a uno, batiendo después de cada uno. Añadí la vainilla.",
+        "Tamizá la harina con la sal y uníla a la mezcla sin revolver de más.",
+        "Si usás nueces, agregalas ahora. Volcá en el molde.",
+        "Hornear 25-30 min. El centro debe quedar húmedo. Dejálo enfriar antes de cortar."
+      ]
+    },
+    milanesa: {
+      emoji: "🍖",
+      nombre: "Milanesa a la Napolitana",
+      subtitulo: "Plato principal · 4 porciones · 45 min",
+      chips: ["Medio", "45 min", "4 porciones"],
+      ingredientes: [
+        "4 bifes de nalga finos",
+        "2 huevos",
+        "Pan rallado",
+        "Sal, pimienta y ajo en polvo",
+        "Salsa de tomate",
+        "4 fetas de jamón cocido",
+        "Queso mozzarella",
+        "Aceite para freír"
+      ],
+      pasos: [
+        "Golpeá los bifes con un mazo para ablandarlos y hacerlos más finos.",
+        "Salpimentá la carne y pasá por huevo batido con ajo en polvo.",
+        "Empanálos bien con pan rallado presionando para que quede adherido.",
+        "Freílos en aceite caliente 2-3 minutos por lado hasta que estén doradas. Escurrí en papel.",
+        "Colocálos en una placa. Poneles salsa de tomate, una feta de jamón y queso mozzarella encima.",
+        "Lleválos al horno a 200°C hasta que el queso se derrita y gratine (unos 10 min)."
+      ]
+    },
+    panqueques: {
+      emoji: "🥞",
+      nombre: "Panqueques Esponjosos",
+      subtitulo: "Desayuno · 4 porciones · 20 min",
+      chips: ["Fácil", "20 min", "8-10 panqueques"],
+      ingredientes: [
+        "1 taza de harina",
+        "1 taza de leche",
+        "1 huevo",
+        "2 cdas de azúcar",
+        "1 cdita de polvo de hornear",
+        "1 pizca de sal",
+        "1 cda de manteca derretida",
+        "Miel o mermelada para servir"
+      ],
+      pasos: [
+        "Mezclá en un bowl la harina, azúcar, polvo de hornear y sal.",
+        "En otro bowl batí el huevo con la leche y la manteca derretida.",
+        "Uní los líquidos con los secos revolviendo suavemente hasta integrar. No importa si quedan algunos grumos.",
+        "Calentar una sartén antiadherente a fuego medio y pincelarla con un poco de manteca.",
+        "Volcá ¼ de taza de mezcla por panqueque. Cuando aparezcan burbujas en la superficie, dalo vuelta.",
+        "Cocinar 1-2 minutos más del otro lado. Serví con miel, mermelada o dulce de leche."
+      ]
+    }
+    ,
+    carne_papas: {
+      emoji: "🥩",
+      nombre: "Carne con Papas",
+      subtitulo: "Plato principal · 4 porciones · 1 hora",
+      chips: ["Medio", "1 hora", "4 porciones"],
+      ingredientes: [
+        "600g de carne para guiso (aguja o roast beef)",
+        "4 papas medianas",
+        "1 cebolla grande",
+        "3 dientes de ajo",
+        "1 pimiento rojo",
+        "2 tomates perita",
+        "2 tazas de caldo de carne",
+        "3 cdas de aceite",
+        "1 cdita de pimentón dulce",
+        "1 cdita de orégano",
+        "Sal y pimienta a gusto"
+      ],
+      pasos: [
+        "Cortá la carne en cubos de 3 cm. Pelá y cortá las papas en trozos grandes. Picá la cebolla, el ajo, el pimiento y el tomate.",
+        "Calentá el aceite en una olla grande a fuego fuerte. Sellá la carne por todos lados hasta que esté bien dorada. Retirala y reservala.",
+        "En la misma olla, bajá el fuego a medio y sofreí la cebolla, el ajo y el pimiento hasta que estén blandos (unos 8 min). Agregá el tomate y cocinalo 3 minutos más.",
+        "Volvé a poner la carne en la olla. Agregá el pimentón, el orégano, sal y pimienta. Mezclá bien.",
+        "Volcá el caldo hasta cubrir todo. Cuando rompa el hervor, bajá el fuego al mínimo y tapá la olla. Cocinalo 30 minutos.",
+        "Agregá las papas y cocinalo 20-25 minutos más hasta que estén tiernas y la salsa espese. Serví bien caliente."
+      ]
+    }
+  };
+
+  function mostrarReceta(id) {
+    // Actualizar botones activos
+    document.querySelectorAll('.btn-receta').forEach(b => b.classList.remove('activo'));
+    event.currentTarget.classList.add('activo');
+
+    const r = recetas[id];
+    const container = document.getElementById('receta-container');
+
+    container.innerHTML = `
+      <div class="card-inner">
+        <div class="card-header">
+          <span class="emoji">${r.emoji}</span>
+          <h2>${r.nombre}</h2>
+          <p class="subtitulo">${r.subtitulo}</p>
+          <div class="info-chips">
+            ${r.chips.map(c => `<span class="chip">${c}</span>`).join('')}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="seccion">
+            <h3>Ingredientes</h3>
+            <ul>
+              ${r.ingredientes.map(i => `<li>${i}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="seccion">
+            <h3>Preparación</h3>
+            <ol>
+              ${r.pasos.map(p => `<li>${p}</li>`).join('')}
+            </ol>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
